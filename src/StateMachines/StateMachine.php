@@ -111,7 +111,7 @@ abstract class StateMachine
             throw new ValidationException($validator);
         }
 
-        $beforeTransitionHooks = $this->beforeTransitionHooks()[$from] ?? [];
+        $beforeTransitionHooks = $this->beforeTransitionHooks($responsible)[$from] ?? [];
 
         collect($beforeTransitionHooks)
             ->each(function ($callable) use ($to) {
@@ -129,7 +129,7 @@ abstract class StateMachine
             $this->model->recordState($field, $from, $to, $customProperties, $responsible, $changedAttributes);
         }
 
-        $afterTransitionHooks = $this->afterTransitionHooks()[$to] ?? [];
+        $afterTransitionHooks = $this->afterTransitionHooks($responsible)[$to] ?? [];
 
         collect($afterTransitionHooks)
             ->each(function ($callable) use ($from) {
@@ -186,12 +186,12 @@ abstract class StateMachine
         return null;
     }
 
-    public function afterTransitionHooks() : array
+    public function afterTransitionHooks($responsible = null) : array
     {
         return [];
     }
 
-    public function beforeTransitionHooks() : array {
+    public function beforeTransitionHooks($responsible = null) : array {
         return [];
     }
 }
