@@ -69,9 +69,9 @@ abstract class StateMachine
         return $this->history()->to($state)->get();
     }
 
-    public function canBe($from, $to)
+    public function canBe($from, $to, $responsible = null)
     {
-        $availableTransitions = $this->transitions()[$from] ?? [];
+        $availableTransitions = $this->transitions($responsible)[$from] ?? [];
 
         return collect($availableTransitions)->contains($to);
     }
@@ -96,11 +96,13 @@ abstract class StateMachine
      */
     public function transitionTo($from, $to, $customProperties = [], $responsible = null)
     {
+        $responsible = $responsible ?? auth()->user()
+
         if ($to === $this->currentState()) {
             return;
         }
 
-        if (!$this->canBe($from, $to)) {
+        if (!$this->canBe($from, $to, $responsible)) {
             throw new TransitionNotAllowedException();
         }
 
@@ -124,8 +126,6 @@ abstract class StateMachine
         $this->model->save();
 
         if ($this->recordHistory()) {
-            $responsible = $responsible ?? auth()->user();
-
             $this->model->recordState($field, $from, $to, $customProperties, $responsible, $changedAttributes);
         }
 
@@ -154,11 +154,11 @@ abstract class StateMachine
             return null;
         }
 
-        if (!$this->canBe($from, $to)) {
+        $responsible = $responsible ?? auth()->user();
+
+        if (!$this->canBe($from, $to, $responsible)) {
             throw new TransitionNotAllowedException();
         }
-
-        $responsible = $responsible ?? auth()->user();
 
         return $this->model->recordPendingTransition(
             $this->field,
@@ -175,7 +175,7 @@ abstract class StateMachine
         $this->pendingTransitions()->delete();
     }
 
-    abstract public function transitions() : array;
+    abstract public function transitions($responsible = null) : array;
 
     abstract public function defaultState() : ?string;
 
