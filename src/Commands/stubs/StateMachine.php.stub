@@ -11,7 +11,7 @@ class DummyClass extends StateMachine
         return false;
     }
 
-    public function transitions(): array
+    public function transitions($responsible = null): array
     {
         return [
             //
