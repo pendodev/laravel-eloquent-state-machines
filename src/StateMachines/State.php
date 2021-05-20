@@ -75,9 +75,9 @@ class State
         return $this->stateMachine->history();
     }
 
-    public function canBe($state)
+    public function canBe($state, $responsible = null)
     {
-        return $this->stateMachine->canBe($from = $this->state, $to = $state);
+        return $this->stateMachine->canBe($from = $this->state, $to = $state, $responsible);
     }
 
     public function pendingTransitions()
