@@ -106,7 +106,7 @@ abstract class StateMachine
             throw new TransitionNotAllowedException();
         }
 
-        $validator = $this->validatorForTransition($from, $to, $this->model);
+        $validator = $this->validatorForTransition($from, $to, $this->model, $responsible);
         if ($validator !== null && $validator->fails()) {
             throw new ValidationException($validator);
         }
@@ -181,7 +181,7 @@ abstract class StateMachine
 
     abstract public function recordHistory() : bool;
 
-    public function validatorForTransition($from, $to, $model): ?Validator
+    public function validatorForTransition($from, $to, $model, $responsible = null): ?Validator
     {
         return null;
     }
