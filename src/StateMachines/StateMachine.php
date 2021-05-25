@@ -115,8 +115,8 @@ abstract class StateMachine
         collect($this->beforeTransitionHooks($responsible) ?? [])->filter(function ($value, $key) use ($from)
         {
             return $key === $from || $key === '*';
-        })->flatten()->each(function ($callable) use ($to) {
-            $callable($to, $this->model);
+        })->flatten()->each(function ($callable) use ($to, $from) {
+            $callable($from, $to, $this->model);
         });
 
         $field = $this->field;
@@ -134,8 +134,8 @@ abstract class StateMachine
         collect($this->afterTransitionHooks($responsible) ?? [])->filter(function ($value, $key) use ($to)
         {
             return $key === $to || $key === '*';
-        })->flatten()->each(function ($callable) use ($from) {
-            $callable($from, $this->model);
+        })->flatten()->each(function ($callable) use ($from, $to) {
+            $callable($from, $to, $this->model);
         });
 
         $this->cancelAllPendingTransitions();
