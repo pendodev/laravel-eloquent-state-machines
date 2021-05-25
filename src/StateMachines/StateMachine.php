@@ -111,12 +111,13 @@ abstract class StateMachine
             throw new ValidationException($validator);
         }
 
-        $beforeTransitionHooks = $this->beforeTransitionHooks($responsible)[$from] ?? [];
-
-        collect($beforeTransitionHooks)
-            ->each(function ($callable) use ($to) {
-                $callable($to, $this->model);
-            });
+        // Before Transition Hooks
+        collect($this->beforeTransitionHooks($responsible) ?? [])->filter(function ($value, $key) use ($from)
+        {
+            return $key === $from || $key === '*';
+        })->flatten()->each(function ($callable) use ($to) {
+            $callable($to, $this->model);
+        });
 
         $field = $this->field;
         $this->model->$field = $to;
@@ -128,13 +129,14 @@ abstract class StateMachine
         if ($this->recordHistory()) {
             $this->model->recordState($field, $from, $to, $customProperties, $responsible, $changedAttributes);
         }
-
-        $afterTransitionHooks = $this->afterTransitionHooks($responsible)[$to] ?? [];
-
-        collect($afterTransitionHooks)
-            ->each(function ($callable) use ($from) {
-                $callable($from, $this->model);
-            });
+        
+        // After Transition Hooks
+        collect($this->afterTransitionHooks($responsible) ?? [])->filter(function ($value, $key) use ($to)
+        {
+            return $key === $to || $key === '*';
+        })->flatten()->each(function ($callable) use ($from) {
+            $callable($from, $this->model);
+        });
 
         $this->cancelAllPendingTransitions();
     }
