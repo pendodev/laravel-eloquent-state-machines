@@ -96,7 +96,7 @@ abstract class StateMachine
      */
     public function transitionTo($from, $to, $customProperties = [], $responsible = null)
     {
-        $responsible = $responsible ?? auth()->user()
+        $responsible = $responsible ?? auth()->user();
 
         if ($to === $this->currentState()) {
             return;
