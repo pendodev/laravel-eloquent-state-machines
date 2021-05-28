@@ -89,6 +89,11 @@ class State
     {
         return $this->stateMachine->hasPendingTransitions();
     }
+    
+    public function transitionToPrevious($customProperties = [], $responsible = null)
+    {
+        $this->transitionTo($this->history()->last()->from, $customProperties, $responsible);
+    }
 
     public function transitionTo($state, $customProperties = [], $responsible = null)
     {
