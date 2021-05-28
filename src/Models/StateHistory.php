@@ -61,6 +61,11 @@ class StateHistory extends Model
     {
         $query->where('field', $field);
     }
+    
+    public function scopeLast($query)
+    {
+        return $query->orderBy('id', 'desc')->first();
+    }
 
     public function scopeFrom($query, $from)
     {
