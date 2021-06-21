@@ -75,6 +75,12 @@ abstract class StateMachine
 
         return collect($availableTransitions)->contains($to);
     }
+    
+    public function validTransitions($responsible = null) 
+    {
+        $responsible = is_null($responsible) ? Auth::user() : $responsible;
+        return $this->transitions($responsible)[$this->currentState()] ?? [];
+    }
 
     public function pendingTransitions()
     {
