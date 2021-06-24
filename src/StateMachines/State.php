@@ -64,6 +64,12 @@ class State
     {
         return $this->stateMachine->snapshotWhen($state);
     }
+    
+    
+    public function validTransitions($responsible = null) 
+    {
+        return $this->stateMachine->validTransitions($responsible);
+    }
 
     public function snapshotsWhen($state)
     {
